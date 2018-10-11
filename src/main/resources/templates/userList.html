@@ -1,0 +1,203 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Insert title here</title>
+    <script src="../Highcharts-6.1.2/code/highcharts.js"></script>
+    <script src="../highcharts/code/highcharts-3d.js"></script>
+    <script src="../jquery.min.js"></script>
+    <link rel="stylesheet"
+          href="../EasyUI/themes/default/easyui.css" type="text/css"/>
+
+    <!-- 引入EasyUI的图标样式文件-->
+    <link rel="stylesheet"
+          href="../EasyUI/themes/icon.css" type="text/css"/>
+</head>
+<body>
+<input type="button" value="新增" onclick="addBtn()">
+
+<table id="showTable"></table>
+<div id="showAdd"></div>
+
+<script type="text/javascript"
+        src="../EasyUI/jquery.min.js"></script>
+
+<!-- 引入EasyUI -->
+<script type="text/javascript"
+        src="../EasyUI/jquery.easyui.min.js"></script>
+<!-- 引入EasyUI的中文国际化js，让EasyUI支持中文 -->
+<script type="text/javascript"
+        src="../EasyUI/locale/easyui-lang-zh_CN.js"></script>
+
+<script type="text/javascript"
+        src="../EasyUI/util-js.js"></script>
+<script type="text/javascript">
+
+
+    $(function(){
+        user();
+    })
+
+    function addBtn(){
+        $('#showAdd').dialog({
+            title: '新增',
+            width: 400,
+            height: 400,
+            closed: false,
+            cache: false,
+            href: '../user/toAddUser',
+            modal: true,
+            buttons:[{
+                text:'保存',
+                handler:function(){
+                    $.ajax({
+                        url:'../user/addUser',
+                        type:'post',
+                        data:$("#addForm").serialize(),
+                        success:function(result){
+                            if(result){
+                                $('#showAdd').dialog("close");
+                                $('#showTable').datagrid('reload');
+                                $.messager.show({
+                                    title:'添加成功',
+                                    msg:'消息将在2秒后关闭。',
+                                    timeout:2000,
+                                    showType:'slide'
+                                });
+                            }
+                        }
+                    });
+                }
+            },{
+                text:'关闭',
+                handler:function(){
+                    $('#showAdd').dialog("close");
+                    $('#').datagrid('reload');
+                    $.messager.show({
+                        title:'我的消息',
+                        msg:'消息将在2秒后关闭。',
+                        timeout:2000,
+                        showType:'slide'
+                    });
+                }
+            }]
+        });
+    }
+
+    function user(){
+        $('#showTable').datagrid({
+            url:'../user/getUserList',
+            checkOnSelect:false,
+            selectOnCheck:false,
+            singleSelect:true,
+            pagination:true,
+            pageNumber:1,
+            pageSize:2,
+            pageList:[2,5,8],
+            columns:[[
+                {field:'id',title:'编号',width:150},
+                {field:'name',title:'用户名',width:50},
+                {field:'phoneName',title:'手机号',width:50},
+                {field:'status',title:'状态',width:80,
+                    formatter:function(value,row,index){
+                       if(value==1){
+                           return "未登录"
+                       }
+                        if(value==2){
+                            return "已登录"
+                        }
+
+                    }
+                },
+                {field:'sex',title:'性别',width:50,
+                    formatter:function(value,row,index){
+                        return value == 1?"女":"男";
+                    }
+                },
+                {field:'email',title:'email',width:100},
+                {field:'detail',title:'介绍',width:50},
+                {field:'234',title:'操作',
+                    formatter:function(value,row,index){
+                        return 	'<a href="javascript:delUser(\''+row.id+'\')">删除</a>&nbsp;'+
+                            '<a href="javascript:updateUser(\''+row.id+'\')">修改</a>&nbsp;'
+                            ;
+                    }
+                }
+            ]],
+            /* queryParams: {
+                name:$("#name").val(),
+                mintime:$("#mintime").val(),
+                maxtime:$("#maxtime").val(),
+            } */
+        })
+    }
+
+    function updateUser(id){
+        alert(id);
+        $('#showAdd').dialog({
+            title: '修改',
+            width: 400,
+            height: 400,
+            closed: false,
+            cache: false,
+            href: '../user/toEditUser?id='+id,
+            modal: true,
+            buttons:[{
+                text:'保存',
+                handler:function(){
+                    $.ajax({
+                        url:'../user/updateUser',
+                        type:'post',
+                        data:$("#updateForm").serialize(),
+                        success:function(result){
+                            if(result){
+                                $('#showAdd').dialog("close");
+                                $('#showTable').datagrid('reload');
+                                $.messager.show({
+                                    title:'添加成功',
+                                    msg:'消息将在2秒后关闭。',
+                                    timeout:2000,
+                                    showType:'slide'
+                                });
+                            }
+                        }
+                    });
+                }
+            },{
+                text:'关闭',
+                handler:function(){
+                    $('#showAdd').dialog("close");
+                    $('#showTable').datagrid('reload');
+                    $.messager.show({
+                        title:'我的消息',
+                        msg:'消息将在2秒后关闭。',
+                        timeout:2000,
+                        showType:'slide'
+                    });
+                }
+            }]
+        });
+    }
+
+    function delUser(id){
+
+        $.ajax({
+            url:'../user/delUser',
+            type:'post',
+            data:{
+                id:id
+            },
+            success:function(result){
+                $('#showTable').datagrid('reload');
+            }
+        })
+    }
+
+
+
+
+
+
+</script>
+</body>
+</html>
